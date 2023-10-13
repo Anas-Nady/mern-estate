@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import userRoute from "./routes/userRoute";
 dotenv.config();
 
 const app = express();
@@ -13,6 +14,8 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+
+app.use("/api/user", userRoute);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
