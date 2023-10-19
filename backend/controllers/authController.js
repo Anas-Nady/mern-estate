@@ -45,12 +45,6 @@ export const signIn = asyncHandler(async (req, res, next) => {
 
   isUserExists.password = undefined;
 
-  const token = jwt.sign({ id: isUserExists._id }, process.env.JWT_SECRET);
-  res.cookie("access_token", token, {
-    httpOnly: true,
-    expires: new Date(Date.now() + process.env.COOKIE_EXPIRES * 60 * 60 * 1000),
-  });
-
   createSendToken(isUserExists, 200, res);
 });
 
