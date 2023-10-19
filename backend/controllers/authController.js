@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import User from "./../models/userModel.js";
 import createSendToken from "../utils/createSendToken.js";
 import AppError from "../utils/appError.js";
@@ -25,4 +26,30 @@ export const signUp = asyncHandler(async (req, res, next) => {
     return next(new AppError("invalid data input.!", 500));
   }
   createSendToken(newUser, 201, res);
+});
+
+export const signIn = asyncHandler(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  const isUserExists = await User.findOne({ email });
+
+  if (!isUserExists) return next(new AppError("Your email not found.", 404));
+
+  const isPasswordCorrect = await bcrypt.compare(
+    password,
+    isUserExists.password
+  );
+
+  if (!isPasswordCorrect)
+    return next(new AppError("Your enter password incorrect.", 400));
+
+  isUserExists.password = undefined;
+
+  const token = jwt.sign({ id: isUserExists._id }, process.env.JWT_SECRET);
+  res.cookie("access_token", token, {
+    httpOnly: true,
+    expires: new Date(Date.now() + process.env.COOKIE_EXPIRES * 60 * 60 * 1000),
+  });
+
+  createSendToken(isUserExists, 200, res);
 });
