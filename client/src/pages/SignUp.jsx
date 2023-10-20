@@ -19,7 +19,7 @@ export default function SignUp() {
     try {
       const { response } = await axios.post("/api/auth/signup", formData);
       console.log("Response data:", response);
-      navigateTo("/sign-in");
+      navigateTo("/");
       // Handle a successful response here if needed
     } catch (error) {
       console.error("Error:", error);
